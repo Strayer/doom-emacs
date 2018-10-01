@@ -30,7 +30,13 @@
 
   (def-package! flycheck-credo
     :when (featurep! :feature syntax-checker)
-    :config (flycheck-credo-setup)))
+    :config (flycheck-credo-setup))
+
+  (def-package! flycheck-mix
+    :when (featurep! :feature syntax-checker)
+    :after flycheck-credo
+    :config (progn (flycheck-mix-setup)
+                   (flycheck-add-next-checker 'elixir-mix '(warning . elixir-credo)))))
 
 
 (def-package! alchemist
@@ -41,3 +47,12 @@
     :documentation #'alchemist-help-search-at-point)
   (set-eval-handler! 'elixir-mode #'alchemist-eval-region)
   (set-repl-handler! 'elixir-mode #'alchemist-iex-project-run))
+
+(defvar +elixir-enable-flycheck-mix nil)
+(defun +elixir|disable-flycheck-mix-maybe ()
+  (unless +elixir-enable-flycheck-mix
+    (setq flycheck-disabled-checkers '(elixir-mix))))
+
+(defun +elixir|local-variables-hook ()
+  (when (derived-mode-p 'elixir-mode) (+elixir|disable-flycheck-mix-maybe)))
+(add-hook 'hack-local-variables-hook #'+elixir|local-variables-hook)

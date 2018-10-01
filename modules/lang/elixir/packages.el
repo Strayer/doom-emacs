@@ -5,4 +5,5 @@
 (package! elixir-mode)
 (package! alchemist)
 (when (featurep! :feature syntax-checker)
-  (package! flycheck-credo))
+  (package! flycheck-credo)
+  (package! flycheck-mix))
